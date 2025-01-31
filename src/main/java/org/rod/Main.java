@@ -19,6 +19,10 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.sound.SoundEvent;
+import org.rod.commands.gamemode.gmc;
+import org.rod.commands.gamemode.gms;
+import org.rod.commands.gamemode.gmsp;
+import org.rod.commands.heal;
 import org.rod.commands.test;
 
 import java.time.Duration;
@@ -102,7 +106,9 @@ public class Main {
                         player.getInventory().addItemStack(itemStack);
                         //Debug
                         System.out.println("Picked up");
+
                     }
+
             }).build());
 
 
@@ -118,7 +124,6 @@ public class Main {
             //0.5 seconds of pickup delay
             itemEntity.setPickupDelay(Duration.ofMillis(500));
             itemEntity.setMergeRange(1.5f);
-            event.getPlayer().playSound(Sound.sound(SoundEvent.DROP));
         });
 
         // Add the event node to the global event handler
@@ -129,6 +134,12 @@ public class Main {
 
        //Initialize commands
         MinecraftServer.getCommandManager().register(new test());
+        //Heal
+        MinecraftServer.getCommandManager().register(new heal());
+        //Gamemodes
+        MinecraftServer.getCommandManager().register(new gmc());
+        MinecraftServer.getCommandManager().register(new gms());
+        MinecraftServer.getCommandManager().register(new gmsp());
 
 
         // Initialize Mojang authentication and start the server
