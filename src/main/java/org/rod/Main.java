@@ -19,6 +19,7 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.sound.SoundEvent;
+import net.minestom.server.utils.time.TimeUnit;
 import org.rod.commands.gamemode.gmc;
 import org.rod.commands.gamemode.gms;
 import org.rod.commands.gamemode.gmsp;
@@ -26,6 +27,7 @@ import org.rod.commands.heal;
 import org.rod.commands.test;
 
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
@@ -130,6 +132,31 @@ public class Main {
         globalEventHandler.addChild(allNode);
         globalEventHandler.addChild(playerNode);
 
+        // Save the world
+        var Scheduler = MinecraftServer.getSchedulerManager();
+
+        Scheduler.buildShutdownTask(() -> {
+            CompletableFuture<Void> saveTasks = CompletableFuture.allOf(
+                    instanceContainer.saveChunksToStorage(),
+                    instanceContainer.saveInstance()
+            );
+
+            instanceManager.getInstances().forEach(instance -> {
+                saveTasks.thenCompose(v -> instance.saveInstance());
+            });
+
+            saveTasks.join();
+            System.out.println("World saved....................");
+        });
+
+        Scheduler.buildTask(() -> {
+
+            instanceManager.getInstances().forEach(instance ->
+                            instance.saveChunksToStorage()
+                    );
+        })
+                .repeat(30, TimeUnit.MINUTE)
+                .schedule();
 
 
        //Initialize commands
@@ -145,5 +172,6 @@ public class Main {
         // Initialize Mojang authentication and start the server
         MojangAuth.init();
         server.start("0.0.0.0", 25565);
+
     }
 }

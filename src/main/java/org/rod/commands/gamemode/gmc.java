@@ -5,7 +5,7 @@ import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 
 public class gmc extends Command {
-
+    //TO-DO: Add target player argument
     public gmc() {
         super("gmc");
 

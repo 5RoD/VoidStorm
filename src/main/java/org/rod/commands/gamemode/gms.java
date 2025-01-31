@@ -7,7 +7,7 @@ import net.minestom.server.entity.Player;
 
 public class gms extends Command {
 
-
+//TO-DO: Add target player argument
     public gms() {
         super("gms");
 
@@ -16,16 +16,4 @@ public class gms extends Command {
 
             var senderPlayer = (Player) sender;
             senderPlayer.setGameMode(GameMode.SURVIVAL);
-        });
-
-        var targetPlayer = ArgumentType.
-        addSyntax((sender, context) -> {
-
-
-            var player = (Player) targetPlayer;
-
-            }
-        }, targetPlayer);}}
-
-    }
-}
+        });}}

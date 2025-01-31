@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("com.gradleup.shadow") version "8.3.0"
 }
 
 group = "org.example"
@@ -17,6 +18,24 @@ dependencies {
     implementation("net.minestom:minestom-snapshots:32735340d7")
 }
 
-tasks.test {
-    useJUnitPlatform()
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21)) // Minestom has a minimum Java version of 21
+    }
+}
+
+tasks {
+    jar {
+        manifest {
+            attributes["Main-Class"] = "org.rod.Main" // Change this to your main class
+        }
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+    shadowJar {
+        mergeServiceFiles()
+        archiveClassifier.set("") // Prevent the -all suffix on the shadowjar file.
+    }
 }

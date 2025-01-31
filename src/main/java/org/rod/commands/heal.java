@@ -4,7 +4,7 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.entity.Player;
 
 public class heal extends Command {
-
+    //TO-DO: Add target player argument
     public heal() {
         super("heal");
 
