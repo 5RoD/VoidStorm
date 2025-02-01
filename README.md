@@ -17,7 +17,7 @@ This repository is a **playground** for testing various Minestom features, inclu
 ## 🔧 Setup
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/minestuff.git
+   git clone https://github.com/5RoD/VoidStorm.git
    cd minestuff
    ```
 2. Build & run:
