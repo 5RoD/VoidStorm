@@ -1,29 +1,58 @@
 package org.rod.commands;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import net.minestom.server.command.builder.Command;
-import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.arguments.ArgumentType;
+import net.minestom.server.utils.Range;
 
+
+//Learning class test commands
 public class test extends Command {
 
     public test() {
-            super("test", "gg");
-
+        super("test", "gg");
 
 
         setDefaultExecutor((sender, context) -> {
 
-         sender.sendMessage("test bro");
+            Title title = Title.title(
+                    Component.text("Hello Everybody")
+                            .color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD),
+                    Component.text("hehe")
+                            .color(NamedTextColor.RED));
+
+            sender.showTitle(title);
+
         });
 
 
-        var manAmount = ArgumentType.Integer("manAmount");
+        //Fade in
+        //Display
+        //Fade out
+
+
+
+
+        var titleText = ArgumentType.String("TitleText");
+        var subTitle = ArgumentType.String("SubtitleText");
+
         addSyntax((sender, context) -> {
-            int amount = context.get("manAmount");
 
-            for (var i = 0; i < amount; i++) {
-                sender.sendMessage("Lets gooo");
+            var titleString = context.get(titleText);
+            var subTitleString = context.get(subTitle);
+
+            Title title = Title.title(Component.text(titleString)
+                    .color(NamedTextColor.GOLD), Component.text(subTitleString)
+                    .color(NamedTextColor.GRAY)
+                    .decorate(TextDecoration.ITALIC));
+            sender.showTitle(title);
 
 
-            }
-        }, manAmount);}}
+        }, titleText, subTitle);
+
+
+    }
+}

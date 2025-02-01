@@ -1,11 +1,12 @@
 package org.rod;
 
-import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.GameMode;
-import net.minestom.server.entity.ItemEntity;
-import net.minestom.server.entity.Player;
+import net.minestom.server.entity.*;
 import net.minestom.server.event.*;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.PickupItemEvent;
@@ -15,16 +16,17 @@ import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
+import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import net.minestom.server.sound.SoundEvent;
 import net.minestom.server.utils.time.TimeUnit;
 import org.rod.commands.gamemode.gmc;
 import org.rod.commands.gamemode.gms;
 import org.rod.commands.gamemode.gmsp;
 import org.rod.commands.heal;
 import org.rod.commands.test;
+import org.rod.util.Tab;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
@@ -35,11 +37,6 @@ public class Main {
     public static void main(String[] args) {
 
 
-
-
-
-
-
         // Initialize the server
         MinecraftServer server = MinecraftServer.init();
 
@@ -47,7 +44,7 @@ public class Main {
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
 
         // Create an instance container (world)
-        InstanceContainer instanceContainer = instanceManager.createInstanceContainer();
+        InstanceContainer instanceContainer = instanceManager.createInstanceContainer(new AnvilLoader("world"));
 
         // Set the world generator
         instanceContainer.setGenerator(event -> {
@@ -56,6 +53,7 @@ public class Main {
 
         // Set the chunk supplier for lighting
         instanceContainer.setChunkSupplier(LightingChunk::new);
+        instanceContainer.enableAutoChunkLoad(true);
 
         // Create a global event handler
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();
@@ -73,7 +71,6 @@ public class Main {
             player.setGameMode(GameMode.CREATIVE);
             player.getInventory().addItemStack(ItemStack.of(Material.BAMBOO_PLANKS, 64));
         });
-
 
 
         // Add a listener for block break events
@@ -95,6 +92,17 @@ public class Main {
                 itemEntity.setInstance(event.getInstance(), event.getBlockPosition().add(x, y, z));
                 // Set a pickup delay of 500 milliseconds for the ItemEntity
                 itemEntity.setPickupDelay(Duration.ofMillis(500));
+
+
+                //Debug learn
+                var message = Component.text("Broke a block bruh")
+                        .color(NamedTextColor.RED)
+                        .decorate(TextDecoration.UNDERLINED, TextDecoration.BOLD)
+                        .appendNewline()
+                        .append(Component.text("You got: ")
+                                .append(Component.text(material.name()).color(NamedTextColor.YELLOW)))
+                        .hoverEvent(Component.text("You are sus"));
+                event.getPlayer().sendMessage(message);
             }
         });
 
@@ -111,20 +119,19 @@ public class Main {
 
                     }
 
-            }).build());
+                }).build());
 
 
-
-          //Item Drop Event
+        //Item Drop Event
         allNode.addListener(ItemDropEvent.class, event -> {
             //get the itemstack from the event
             ItemEntity itemEntity = new ItemEntity(event.getItemStack());
             //we get the instance of where the item is dropped and we set it as our itementity
             itemEntity.setInstance(event.getInstance(), event.getPlayer().getPosition());
             //we set the velocity of the item based on where the player is
-            itemEntity.setVelocity(event.getPlayer().getPosition().direction().add(0,1.8,0).mul(4));
+            itemEntity.setVelocity(event.getPlayer().getPosition().direction().add(0, 1.8, 0).mul(4));
             //0.5 seconds of pickup delay
-            itemEntity.setPickupDelay(Duration.ofMillis(500));
+            itemEntity.setPickupDelay(Duration.ofMillis(350));
             itemEntity.setMergeRange(1.5f);
         });
 
@@ -151,15 +158,27 @@ public class Main {
 
         Scheduler.buildTask(() -> {
 
-            instanceManager.getInstances().forEach(instance ->
+                    instanceManager.getInstances().forEach(instance ->
                             instance.saveChunksToStorage()
                     );
-        })
+                })
                 .repeat(30, TimeUnit.MINUTE)
                 .schedule();
 
 
-       //Initialize commands
+        //Testing
+        Entity zombie = new LivingEntity(EntityType.ZOMBIE);
+        zombie.setInstance(instanceContainer, new Pos(0.5, 72, 0.5));
+
+
+        // Commands
+        {
+            CommandManager manager = MinecraftServer.getCommandManager();
+            manager.setUnknownCommandCallback((sender, contex) -> sender.sendMessage("Command not found."));
+        }
+
+
+        //Initialize commands
         MinecraftServer.getCommandManager().register(new test());
         //Heal
         MinecraftServer.getCommandManager().register(new heal());
@@ -167,11 +186,14 @@ public class Main {
         MinecraftServer.getCommandManager().register(new gmc());
         MinecraftServer.getCommandManager().register(new gms());
         MinecraftServer.getCommandManager().register(new gmsp());
+        Tab tabInstance = new Tab();
+        tabInstance.initialize();
 
 
         // Initialize Mojang authentication and start the server
         MojangAuth.init();
         server.start("0.0.0.0", 25565);
+
 
     }
 }

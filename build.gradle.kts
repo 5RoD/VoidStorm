@@ -6,9 +6,13 @@ plugins {
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
-repositories {
-    mavenCentral()
-}
+
+    repositories {
+        mavenCentral()
+        maven("https://jitpack.io")
+        maven("https://reposilite.worldseed.online/public")
+    }
+
 
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
@@ -16,11 +20,14 @@ dependencies {
 
     implementation("org.slf4j:slf4j-simple:2.0.16")
     implementation("net.minestom:minestom-snapshots:32735340d7")
+    implementation("ca.atlasengine:atlas-projectiles:2.1.1")
+
+
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21)) // Minestom has a minimum Java version of 21
+        languageVersion.set(JavaLanguageVersion.of(23)) // Minestom has a minimum Java version of 21
     }
 }
 
