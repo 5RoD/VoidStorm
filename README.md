@@ -1,6 +1,6 @@
-# Minestuff
+# VoidStorm
 
-Welcome to **Minestuff**, a Minestom-based project for experimenting with custom Minecraft server mechanics!
+Welcome to **VoidStorm**, a Minestom-based project for experimenting with custom Minecraft server mechanics!
 
 ## 🚀 About
 This repository is a **playground** for testing various Minestom features, including:
@@ -18,7 +18,7 @@ This repository is a **playground** for testing various Minestom features, inclu
 1. Clone the repository:
    ```sh
    git clone https://github.com/5RoD/VoidStorm.git
-   cd minestuff
+   cd VoidStorm
    ```
 2. Build & run:
    ```sh
