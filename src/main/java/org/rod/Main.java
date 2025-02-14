@@ -7,7 +7,12 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.*;
+import net.minestom.server.entity.damage.Damage;
+import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.event.*;
+import net.minestom.server.event.entity.EntityAttackEvent;
+import net.minestom.server.event.entity.EntityDeathEvent;
+import net.minestom.server.event.entity.EntitySpawnEvent;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.item.PickupItemEvent;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
@@ -20,6 +25,8 @@ import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.network.packet.server.play.ParticlePacket;
+import net.minestom.server.particle.Particle;
 import net.minestom.server.utils.time.TimeUnit;
 import org.rod.commands.gamemode.gmc;
 import org.rod.commands.gamemode.gms;
@@ -83,7 +90,7 @@ public class Main {
                 // Create an ItemEntity from the ItemStack
                 ItemEntity itemEntity = new ItemEntity(itemstack);
 
-                // Randomize the block spawn position
+                // Randomize the block spawn position after broken
                 double x = ThreadLocalRandom.current().nextDouble(0.1, 0.9);
                 double y = ThreadLocalRandom.current().nextDouble(0.1, 0.9);
                 double z = ThreadLocalRandom.current().nextDouble(0.1, 0.9);
@@ -135,6 +142,64 @@ public class Main {
             itemEntity.setMergeRange(1.5f);
         });
 
+
+        allNode.addListener(EntitySpawnEvent.class, event -> {
+
+
+
+            LivingEntity entity = (LivingEntity) event.getEntity();
+
+            entity.setInstance(instanceContainer, new Pos(0.5, 72, 0.5));
+            entity.setHealth(20f);
+
+
+            //test
+                instanceContainer.getPlayers().forEach(player -> {
+                    player.sendMessage(Component.text("Entity Spawned!").color(NamedTextColor.DARK_GREEN));
+                });
+
+                //get the entity from the event
+                event.getEntity().hasVelocity();
+                event.getEntity().setCustomName(Component.text("Im an entity!").color(NamedTextColor.RED));
+                event.getEntity().getEntityMeta().setPose(EntityPose.SITTING);
+
+        });
+
+
+        allNode.addListener(EntityAttackEvent.class, event -> {
+            LivingEntity attacker = (LivingEntity) event.getEntity();
+            LivingEntity target = (LivingEntity) event.getTarget();
+
+            // Apply damage to the target entity
+            target.damage(new Damage(DamageType.PLAYER_ATTACK, attacker, null, null, 5.0f));
+        });
+
+        allNode.addListener(EntityDeathEvent.class, event -> {
+
+
+            var pos = event.getEntity().getPosition();
+
+            ParticlePacket ppacket = new ParticlePacket(
+                    Particle.CLOUD,
+                    true,
+                    pos.x(),
+                    pos.y(),
+                    pos.z(),
+                    0.5f,
+                    0.5f,
+                    0.5f,
+                    1f,
+                    100
+            );
+
+            for (var player : event.getInstance().getPlayers()) {
+                player.sendPacket(ppacket);
+            }
+
+            event.getEntity().remove();
+        });
+
+
         // Add the event node to the global event handler
         globalEventHandler.addChild(allNode);
         globalEventHandler.addChild(playerNode);
@@ -169,6 +234,8 @@ public class Main {
         //Testing
         Entity zombie = new LivingEntity(EntityType.ZOMBIE);
         zombie.setInstance(instanceContainer, new Pos(0.5, 72, 0.5));
+        Entity sheep = new LivingEntity(EntityType.SHEEP);
+        sheep.setInstance(instanceContainer, new Pos(4, 72, 4));
 
 
         // Commands

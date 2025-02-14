@@ -3,7 +3,7 @@ plugins {
     id("com.gradleup.shadow") version "8.3.0"
 }
 
-group = "org.example"
+group = "org.rod"
 version = "1.0-SNAPSHOT"
 
 
@@ -20,7 +20,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     implementation("org.slf4j:slf4j-simple:2.0.16")
-    implementation("net.minestom:minestom-snapshots:32735340d7")
+
+    implementation("net.minestom:minestom-snapshots:620ebe5d6b") //620ebe5d6bba8ebeb9ca467477995698d0754b31
+
     implementation("ca.atlasengine:atlas-projectiles:2.1.1")
     implementation("net.worldseed.particleemitter:ParticleEmitter:1.4.1")
 
