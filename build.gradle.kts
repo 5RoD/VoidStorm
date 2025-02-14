@@ -11,6 +11,7 @@ version = "1.0-SNAPSHOT"
         mavenCentral()
         maven("https://jitpack.io")
         maven("https://reposilite.worldseed.online/public")
+
     }
 
 
@@ -21,6 +22,8 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.16")
     implementation("net.minestom:minestom-snapshots:32735340d7")
     implementation("ca.atlasengine:atlas-projectiles:2.1.1")
+    implementation("net.worldseed.particleemitter:ParticleEmitter:1.4.1")
+
 
 
 }
